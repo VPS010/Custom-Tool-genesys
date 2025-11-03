@@ -71,7 +71,7 @@ function buildGenesysPayload(leadData) {
       refReason1: leadData.dropdown1 || '',
       refReason2: leadData.dropdown2 || '',
       notes: leadData.message || '',
-      formType: 'Tars AI Agent',
+      formType: 'Chatbot Form Fill',
       sourceURL: leadData.dropdown3 || ''
     }
   }];
