@@ -112,6 +112,7 @@ app.post('/push-to-genesys', async (req, res) => {
 });
 
 app.get('/health', (req, res) => res.json({ ok: true }));
+app.get('/', (req, res) => res.send('Yes, Tool is up and running...:)'));
 
 app.listen(PORT, () => {
   console.log(`Genesys contact pusher running on port ${PORT}`);
