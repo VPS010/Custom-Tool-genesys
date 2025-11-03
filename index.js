@@ -10,7 +10,7 @@ app.use(express.json({ limit: '500kb' }));
 const PORT = process.env.PORT || 3000;
 const CLIENT_ID = process.env.GENESYS_CLIENT_ID;
 const CLIENT_SECRET = process.env.GENESYS_CLIENT_SECRET;
-const REGION = process.env.GENESYS_REGION || 'usw2';
+const REGION = process.env.GENESYS_REGION;
 const CONTACT_LIST_ID = process.env.CONTACT_LIST_ID;
 const TOKEN_BUFFER = Number(process.env.TOKEN_EXPIRY_BUFFER_SECONDS || 30);
 
@@ -65,15 +65,14 @@ const leadSchema = Joi.object({
 function buildGenesysPayload(leadData) {
   return [{
     data: {
-      FirstName: leadData.firstName || '',
-      LastName: leadData.lastName || '',
-      Email: leadData.email || '',
-      Phone: leadData.phone || '',
-      Inquiry_Reason__c: leadData.dropdown1 || '',
-      Inquiry_Reason_Expanded__c: leadData.dropdown2 || '',
-      How_Did_You_Discover_Amen_Clinics__c: leadData.dropdown3 || '',
-      Inquiry_Notes__c: leadData.message || '',
-      LeadSource: 'Tars AI Agent'
+      name: `${leadData.firstName || ''} ${leadData.lastName || ''}`.trim() || 'Unknown',
+      email: leadData.email || '',
+      phone: leadData.phone || '',
+      refReason1: leadData.dropdown1 || '',
+      refReason2: leadData.dropdown2 || '',
+      notes: leadData.message || '',
+      formType: 'Tars AI Agent',
+      sourceURL: leadData.dropdown3 || ''
     }
   }];
 }
@@ -89,6 +88,7 @@ app.post('/push-to-genesys', async (req, res) => {
 
   try {
     const token = await getAccessToken();
+    console.log('Sending payload:', JSON.stringify(payload, null, 2));
     const resp = await axios.post(url, payload, {
       headers: {
         'Authorization': `Bearer ${token}`,
